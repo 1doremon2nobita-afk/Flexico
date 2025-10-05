@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Md's Gadget Store</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f5f5;
+    }
+    header {
+      background: #E2136E;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    section {
+      padding: 30px;
+      text-align: center;
+    }
+    .intro {
+      background: linear-gradient(to right, #E2136E, #ff6f91);
+      color: white;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .intro h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+    .intro p {
+      font-size: 1.2em;
+      margin-bottom: 30px;
+    }
+    .cta-button {
+      background: white;
+      color: #E2136E;
+      border: none;
+      padding: 15px 30px;
+      font-size: 1em;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+    .product {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .product img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .product h3 {
+      color: #E2136E;
+      margin: 10px 0 5px;
+    }
+    .product p {
+      font-size: 0.9em;
+      color: #555;
+    }
+    .product button {
+      background: #E2136E;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    .cart-preview, .checkout {
+      margin-top: 40px;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .checkout input, .checkout textarea {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+    .checkout button {
+      background: #E2136E;
+      color: white;
+      border: none;
+      padding: 12px;
+      width: 100%;
+      border-radius: 6px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+    .loading {
+      display: none;
+      margin-top: 10px;
+      color: #555;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Intro Section -->
+  <section class="intro" id="intro">
+    <h1>Welcome to Md's Gadget Store</h1>
+    <p>Explore top tech products and pay securely with bKash</p>
+    <button class="cta-button" onclick="document.getElementById('shop').scrollIntoView({behavior:'smooth'})">Enter Shop</button>
+  </section>
+
+  <!-- Product Catalog -->
+  <section id="shop">
+    <header><h2>Shop Products</h2></header>
+    <div class="products">
+      <div class="product">
+        <img src="https://i.imgur.com/0rZbK0P.jpg" alt="Wireless Earbuds">
+        <h3>Wireless Earbuds</h3>
+        <p>৳1200 BDT</p>
+        <button onclick="addToCart('Wireless Earbuds', 1200)">Add to Cart</button>
+      </div>
+      <div class="product">
+        <img src="https://i.imgur.com/1gZzWvF.jpg" alt="Smartwatch">
+        <h3>Smartwatch</h3>
+        <p>৳2500 BDT</p>
+        <button onclick="addToCart('Smartwatch', 2500)">Add to Cart</button>
+      </div>
+      <div class="product">
+        <img src="https://i.imgur.com/2YzZzYx.jpg" alt="Bluetooth Speaker">
+        <h3>Bluetooth Speaker</h3>
+        <p>৳1800 BDT</p>
+        <button onclick="addToCart('Bluetooth Speaker', 1800)">Add to Cart</button>
+      </div>
+    </div>
+
+    <!-- Cart Preview -->
+    <div class="cart-preview" id="cartPreview">
+      <h3>Your Cart</h3>
+      <div id="cartItems">No items yet.</div>
+      <button onclick="document.getElementById('checkout').scrollIntoView({behavior:'smooth'})">Proceed to Checkout</button>
+    </div>
+  </section>
+
+  <!-- Checkout Section -->
+  <section id="checkout">
+    <header><h2>Checkout with bKash</h2></header>
+    <div class="checkout">
+      <div id="cartSummary">Loading cart...</div>
+      <form id="checkoutForm">
+        <input type="text" name="fullname" placeholder="Full Name" required />
+        <input type="tel" name="phone" placeholder="bKash Number (11 digits)" pattern="[0-9]{11}" maxlength="11" required />
+        <textarea name="note" placeholder="Payment Note (Optional)"></textarea>
+        <button type="submit" id="payButton">Pay ৳<span id="totalAmount">0</span> Now</button>
+        <div class="loading" id="loadingText">Processing payment, please wait...</div>
+      </form>
+    </div>
+  </section>
+
+  <script>
+    let cart = [];
+
+    window.onload = function () {
+      const storedCart = localStorage.getItem("cart");
+      cart = storedCart ? JSON.parse(storedCart) : [];
+      updateCart();
+      updateCheckout();
+    };
+
+    function addToCart(name, price) {
+      cart.push({ name, price });
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCart();
+      updateCheckout();
+    }
+
+    function updateCart() {
+      const cartItems = document.getElementById("cartItems");
+      if (!cartItems) return;
+
+      if (cart.length === 0) {
+        cartItems.innerHTML = "No items yet.";
+      } else {
+        cartItems.innerHTML = cart.map(item => `<div>${item.name} - ৳${item.price}</div>`).join("");
+      }
+    }
+
+    function updateCheckout() {
+      const cartSummary = document.getElementById("cartSummary");
+      const totalAmount = document.getElementById("totalAmount");
+      if (!cartSummary || !totalAmount) return;
+
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+      if (cart.length === 0) {
+        cartSummary.innerHTML = "Your cart is empty.";
+        document.getElementById("payButton").disabled = true;
+      } else {
+        cartSummary.innerHTML = cart.map(item => `<div>• ${item.name} — ৳${item.price}</div>`).join("") + `<hr><strong>Total: ৳${total}</strong>`;
+        totalAmount.textContent = total;
+      }
+    }
+
+    document.getElementById("checkoutForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const loadingText = document.getElementById("loadingText");
+      const payButton = document.getElementById("payButton");
+      loadingText.style.display = "block";
+      payButton.disabled = true;
+
+      const form = e.target;
+      const fullname = form.fullname.value.trim();
+      const phone = form.phone.value.trim();
+      const note = form.note.value.trim();
+      const orderId = "ORDER" + Date.now();
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+
+      try {
+        const tokenRes = await fetch("/get-token");
+        const tokenData = await tokenRes.json();
+        const token = tokenData.id_token;
+
+        const paymentRes = await fetch("/create-payment", {
+          method: "POST",
+          headers: { "Content-Type
