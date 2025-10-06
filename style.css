@@ -1,0 +1,69 @@
+:root {
+  --primary-color: #007bff;
+  --accent-color: #00c896;
+}
+
+body {
+  font-family: sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f9f9f9;
+}
+
+header, .intro {
+  background: var(--primary-color);
+  color: white;
+  text-align: center;
+  padding: 1em;
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1em;
+  padding: 1em;
+}
+
+.product {
+  border: 1px solid #ccc;
+  padding: 1em;
+  background: #fff;
+  text-align: center;
+}
+
+.product img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.cart {
+  background: #f4f4f4;
+  padding: 1em;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  padding: 1em;
+  max-width: 400px;
+  margin: auto;
+}
+
+input, select, button {
+  padding: 0.5em;
+}
+
+button {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .products {
+    grid-template-columns: 1fr;
+  }
+}
